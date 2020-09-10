@@ -1,0 +1,1 @@
+const AsyncFiles = require("../lib");
