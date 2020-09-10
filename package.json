@@ -2,7 +2,12 @@
   "name": "asyncfiles",
   "version": "0.0.1",
   "description": "async files ",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "typings": "./lib/index.d.ts",
+  "bin": {
+    "afs": "./bin/asyncFiles",
+    "asyncFiles": "./bin/asyncFiles"
+  },
   "scripts": {
     "dev": "tsc -p tsconfig.json --watch",
     "build": "tsc -p tsconfig.json",
