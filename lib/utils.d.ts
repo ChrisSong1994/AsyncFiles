@@ -2,11 +2,6 @@
  * @param {Promise} promise
  */
 export declare const to: (promise: Promise<any>) => Promise<any>;
-/** 判断一个路径是不是存在
- * @param {String} pathStr
- * @returns {boolean}
- */
-export declare const isPathExists: (pathStr: string) => boolean;
 /**  判断一个路径是目录还是文件
  * 1.假如存在用fs.stat 判断路径类型，不存在用path.extname判断
  * @param {String} pathStr

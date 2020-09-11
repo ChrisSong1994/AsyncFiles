@@ -3,6 +3,7 @@ interface Options {
     source: string;
     target: string;
     watch?: boolean;
+    ignoreInitial?: boolean;
 }
 /**
  *  功能介绍：基于chokidar进行监听并同步文件目录 source 到 target
@@ -13,6 +14,7 @@ interface Options {
  */
 declare class AsyncFiles {
     watch: boolean;
+    ignoreInitial: Boolean;
     source: string;
     target: string;
     watcher: chokidar.FSWatcher | null;

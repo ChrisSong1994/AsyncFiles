@@ -5,11 +5,11 @@
   "main": "lib/index.js",
   "typings": "./lib/index.d.ts",
   "bin": {
-    "afs": "./bin/asyncFiles",
-    "asyncFiles": "./bin/asyncFiles"
+    "afs": "./bin/asyncFiles.js",
+    "asyncFiles": "./bin/asyncFiles.js"
   },
   "scripts": {
-    "dev": "tsc -p tsconfig.json --watch",
+    "dev": "tsc -p tsconfig.json --watch --sourceMap",
     "build": "tsc -p tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "fs-extra": "^9.0.1",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "yargs": "^16.0.3"
   }
 }

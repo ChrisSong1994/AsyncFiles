@@ -1,5 +1,5 @@
 import fs from "fs-extra";
-import path, { resolve } from "path";
+import path from "path";
 import rimraf from "rimraf";
 
 /** 包装promise函数返回值
@@ -11,21 +11,13 @@ export const to = (promise: Promise<any>): Promise<any> => {
     .catch((err: any) => [err, null]);
 };
 
-/** 判断一个路径是不是存在
- * @param {String} pathStr
- * @returns {boolean}
- */
-export const isPathExists = (pathStr: string): boolean => {
-  return fs.existsSync(pathStr);
-};
-
 /**  判断一个路径是目录还是文件
  * 1.假如存在用fs.stat 判断路径类型，不存在用path.extname判断
  * @param {String} pathStr
  * @returns {boolean}
  */
 export const pathIsFile = async (pathStr: string): Promise<Boolean> => {
-  if (isPathExists(pathStr)) {
+  if (fs.existsSync(pathStr)) {
     const stats = await fs.promises.stat(pathStr);
     return stats.isFile();
   } else {
