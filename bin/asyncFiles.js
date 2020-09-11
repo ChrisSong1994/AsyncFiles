@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
-const AsyncFiles = require("../lib/index");
+const AsyncFiles = require("../lib/index").default;
 
 const args = yargs
   .usage("Usage: $0 <命令> [选项]")
@@ -39,4 +39,5 @@ const args = yargs
 
 
   console.log(args)
-//   new AsyncFiles(args)
+  debugger 
+  new AsyncFiles(args)

@@ -41,26 +41,25 @@ class AsyncFiles {
      * 2.source 和 target 不能相同
      * 3.source 和 target 必须是绝对路径
      * */
-    if (!fs.existsSync(this.source)) return log('source不存在');
-    if (!path.isAbsolute(this.source) || !path.isAbsolute(this.target)) return  log('source或者target必须是绝对路径');
-    if (this.source === this.target) return  log('source 和 target 不能相同');
+    if (!fs.existsSync(this.source)) return log("source不存在");
+    if (!path.isAbsolute(this.source) || !path.isAbsolute(this.target))
+      return log("source或者target必须是绝对路径");
+    if (this.source === this.target) return log("source 和 target 不能相同");
 
-    debugger;
     /** 路径类型判断
      * 1. 路径类型需要一致
      * 2. 假如是文件路径,则文件类型必须一致
      * */
     const sourcePathIsFile = await pathIsFile(this.source);
     const targetPathIsFile = await pathIsFile(this.target);
-    if (sourcePathIsFile !== targetPathIsFile) return  log('路径类型需要一致')
+    if (sourcePathIsFile !== targetPathIsFile) return log("路径类型需要一致");
     if (sourcePathIsFile && targetPathIsFile) {
-      if (path.extname(this.source) !== path.extname(this.target)) return  log('文件类型需要一致');
+      if (path.extname(this.source) !== path.extname(this.target))
+        return log("文件类型需要一致");
     }
 
-    debugger;
     // 是否进行监听
     if (!this.watch) {
-      debugger;
       // 假如目的路径存在先删除,再拷贝
       if (fs.existsSync(this.target)) await rimrafPromify(this.target);
       await copyFiles(this.source, this.target);
@@ -70,39 +69,64 @@ class AsyncFiles {
         await rimrafPromify(this.target);
         await copyFiles(this.source, this.target);
       }
+
+      // 基本目录
+      const sourceDir = sourcePathIsFile
+        ? path.parse(this.source).dir
+        : this.source;
+      const targetDir = targetPathIsFile
+        ? path.parse(this.target).dir
+        : this.target;
+
       // 监听变化
       try {
         this.watcher = chokidar.watch(this.source, {
           persistent: true,
           ignoreInitial: true, // 初始化的时候不监听;
-          cwd: path.parse(this.source).dir, // 需要找到source 的目录当作相对路径的根路径
+          /**  需要找到source 的目录当作相对路径的根路径
+           * 1.当source是目录则cwd是当前目录
+           * 2.当source是文件则 path.parse(this.source).dir作为当前目录
+           * */
+          cwd: sourceDir,
         });
 
-        debugger;
         // 增加文件
-        this.watcher.on("add", (path) => {
-          log(`File ${path} has been added`);
+        this.watcher.on("add", async (filePath) => {
+          log(`File ${filePath} has been added`);
+          await copyFiles(
+            path.resolve(sourceDir, filePath),
+            path.resolve(targetDir, filePath)
+          );
         });
 
         // 增加文件夹
-        this.watcher.on("addDir", (path) => {
-          log(`Directory ${path} has been added`);
+        this.watcher.on("addDir", async (dirPath) => {
+          log(`Directory ${dirPath} has been added`);
+          await copyFiles(
+            path.resolve(sourceDir, dirPath),
+            path.resolve(targetDir, dirPath)
+          );
         });
 
         // 修改文件内容
-        this.watcher.on("change", (path, stats) => {
-          log(`File ${path} has been changed`);
-          log(path, stats);
+        this.watcher.on("change", async (filePath) => {
+          log(`File ${filePath} has been changed`);
+          await copyFiles(
+            path.resolve(sourceDir, filePath),
+            path.resolve(targetDir, filePath)
+          );
         });
 
         // 删除文件
-        this.watcher.on("unlink", (path) => {
-          log(`File ${path} has been removed`);
+        this.watcher.on("unlink", async (filePath) => {
+          log(`File ${filePath} has been removed`);
+          await rimrafPromify(path.resolve(targetDir, filePath));
         });
 
         // 删除文件夹
-        this.watcher.on("unlinkDir", (path) => {
-          log(`Directory ${path} has been removed`);
+        this.watcher.on("unlinkDir", async (dirPath) => {
+          log(`Directory ${dirPath} has been removed`);
+          await rimrafPromify(path.resolve(targetDir, dirPath));
         });
 
         // 监听操作错误

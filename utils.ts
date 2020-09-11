@@ -37,7 +37,6 @@ export const copyFiles = async (
     await fs.copy(source, target);
   } catch (err) {
     console.error(err);
-    process.exit(1);
   }
 };
 
