@@ -1,12 +1,13 @@
 import path from "path";
 import fs from "fs-extra";
 import chokidar from "chokidar";
-import { pathIsFile, copyFiles, rimrafPromify, log } from "./utils";
+import { pathIsFile, copyFiles, rimrafPromify, log, exit } from "./utils";
 
 interface Options {
   source: string;
   target: string;
   watch?: boolean;
+  
   ignoreInitial?: boolean;
 }
 
@@ -31,20 +32,27 @@ class AsyncFiles {
     this.source = options.source;
     this.target = options.target;
     this.watcher = null;
-    debugger;
     this.init();
   }
 
   async init() {
+    // 进程
+    process.on("SIGINT", (signal) => exit(0, `✋接收到信号${signal}退出`));
+    process.on("SIGINT", (signal) => exit(0, `✋接收到信号${signal}退出`));
+
     /** 存在性判断
      * 1.source 必须存在
      * 2.source 和 target 不能相同
      * 3.source 和 target 必须是绝对路径
      * */
-    if (!fs.existsSync(this.source)) return log("source不存在");
-    if (!path.isAbsolute(this.source) || !path.isAbsolute(this.target))
-      return log("source或者target必须是绝对路径");
-    if (this.source === this.target) return log("source 和 target 不能相同");
+    if (!fs.existsSync(this.source))
+      throw new Error(`路径${this.source}不存在`);
+
+    if (!path.isAbsolute(this.source) || !path.isAbsolute(this.target)) 
+      throw new Error(`路径${this.source}和${this.target}必须是绝对路径`);
+
+    if (this.source === this.target)
+      throw new Error(`${this.source}和${this.target}不能是相同路径`);
 
     /** 路径类型判断
      * 1. 路径类型需要一致
@@ -52,10 +60,11 @@ class AsyncFiles {
      * */
     const sourcePathIsFile = await pathIsFile(this.source);
     const targetPathIsFile = await pathIsFile(this.target);
-    if (sourcePathIsFile !== targetPathIsFile) return log("路径类型需要一致");
+    if (sourcePathIsFile !== targetPathIsFile)
+      throw new Error(`${this.source}和${this.target}路径类型需要一致`);
     if (sourcePathIsFile && targetPathIsFile) {
       if (path.extname(this.source) !== path.extname(this.target))
-        return log("文件类型需要一致");
+        throw new Error(`${this.source}和${this.target}文件类型需要一致`);
     }
 
     // 是否进行监听
@@ -136,7 +145,6 @@ class AsyncFiles {
           process.exit(1);
         });
       } catch (err) {
-        console.error(err);
         process.exit(1);
       }
     }

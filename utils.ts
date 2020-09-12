@@ -53,3 +53,8 @@ export const rimrafPromify = (pathStr: string): Promise<any> => {
 };
 
 export const log = console.log.bind(console);
+
+export const exit = (code: number, msg: string) => {
+  log(msg);
+  process.exit(code);
+};

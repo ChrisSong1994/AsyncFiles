@@ -4,7 +4,6 @@ const AsyncFiles = require("../lib/index").default;
 
 const args = yargs
   .usage("Usage: $0 <命令> [选项]")
-  .alias("help", "h")
   .alias("version", "v")
   .command("afs", "同步文件")
   .option("source", {
@@ -29,15 +28,15 @@ const args = yargs
     default: false,
     describe: "是否忽略初始化拷贝",
   })
+  .help("h")
+  .alias("h", "help")
   .demandOption(["source", "target"], "请输入source和target路径！")
   .fail(function (msg, err, yargs) {
-    console.error(msg, err);
+    console.error(msg);
     yargs.help();
-    if (err) process.exit(1);
+    process.exit(1);
   })
   .parse(process.argv.slice(2));
 
-
-  console.log(args)
-  debugger 
-  new AsyncFiles(args)
+  // 创建实例
+new AsyncFiles(args);
