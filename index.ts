@@ -7,7 +7,7 @@ interface Options {
   source: string;
   target: string;
   watch?: boolean;
-  
+
   ignoreInitial?: boolean;
 }
 
@@ -48,7 +48,7 @@ class AsyncFiles {
     if (!fs.existsSync(this.source))
       throw new Error(`路径${this.source}不存在`);
 
-    if (!path.isAbsolute(this.source) || !path.isAbsolute(this.target)) 
+    if (!path.isAbsolute(this.source) || !path.isAbsolute(this.target))
       throw new Error(`路径${this.source}和${this.target}必须是绝对路径`);
 
     if (this.source === this.target)
@@ -111,15 +111,13 @@ class AsyncFiles {
         // 增加文件夹
         this.watcher.on("addDir", async (dirPath) => {
           log(`Directory ${dirPath} has been added`);
-          await copyFiles(
-            path.resolve(sourceDir, dirPath),
-            path.resolve(targetDir, dirPath)
-          );
+          await fs.mkdir(path.resolve(targetDir, dirPath));
         });
 
         // 修改文件内容
         this.watcher.on("change", async (filePath) => {
           log(`File ${filePath} has been changed`);
+          await rimrafPromify(path.resolve(targetDir, filePath));
           await copyFiles(
             path.resolve(sourceDir, filePath),
             path.resolve(targetDir, filePath)

@@ -34,7 +34,11 @@ export const copyFiles = async (
   target: string
 ): Promise<void> => {
   try {
-    await fs.copy(source, target);
+    // const isFile = await pathIsFile(target);
+    // const isExists = fs.existsSync(target);
+    // if (isExists && isFile) await rimrafPromify(target);
+    await rimrafPromify(target);
+    await fs.copy(source, target); // 拷贝文件夹会直接把文件内容递归拷贝
   } catch (err) {
     console.error(err);
   }
@@ -54,6 +58,7 @@ export const rimrafPromify = (pathStr: string): Promise<any> => {
 
 export const log = console.log.bind(console);
 
+// 进程退出
 export const exit = (code: number, msg: string) => {
   log(msg);
   process.exit(code);
