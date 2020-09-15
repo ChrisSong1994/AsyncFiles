@@ -1,6 +1,6 @@
 {
   "name": "@chrissong/asyncfiles",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "description": "async files ",
   "main": "lib/index.js",
   "typings": "./lib/index.d.ts",
